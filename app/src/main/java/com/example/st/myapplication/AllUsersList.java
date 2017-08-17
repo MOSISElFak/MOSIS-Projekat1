@@ -31,7 +31,7 @@ public class AllUsersList extends AppCompatActivity {
     private DatabaseReference myRef = database.getReference();
 
 
-    //PROBA GIT
+
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
