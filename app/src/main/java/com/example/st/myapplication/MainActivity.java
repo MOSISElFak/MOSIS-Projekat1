@@ -13,15 +13,18 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Intent poziv = new Intent(getApplicationContext(), AllUsersList.class); //Register.class
-        startActivity(poziv);
+        //Intent poziv = new Intent(getApplicationContext(), MainActivity.class); //Register.class
+        //startActivity(poziv);
 
         Button dugme = (Button) findViewById(R.id.button);
 
                 dugme.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Toast.makeText(getApplicationContext(), "ssdsd", Toast.LENGTH_SHORT).show();
+                        Intent poziv = new Intent(getApplicationContext(), MapsActivity.class); //Register.class
+                        startActivity(poziv);
+
+                        //Toast.makeText(getApplicationContext(), "ssdsd", Toast.LENGTH_SHORT).show();
 
                     }
 
