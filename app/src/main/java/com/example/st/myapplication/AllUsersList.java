@@ -43,6 +43,7 @@ public class AllUsersList extends AppCompatActivity {
         final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_expandable_list_item_1, usernames);
         lista.setAdapter(arrayAdapter);
 
+
         myRef.child("users").addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
@@ -82,9 +83,6 @@ public class AllUsersList extends AppCompatActivity {
             }
         });
         userName=(TextView) findViewById(R.id.UUserName);
-
-
-
 
     }
 

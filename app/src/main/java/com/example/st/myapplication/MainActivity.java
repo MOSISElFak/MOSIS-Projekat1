@@ -5,29 +5,75 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class MainActivity extends AppCompatActivity {
 
-    @Override
+
+    private TextView probniTekst;
+    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+    private FirebaseAuth firebaseAuth;
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         //Intent poziv = new Intent(getApplicationContext(), MainActivity.class); //Register.class
         //startActivity(poziv);
-
-        Button dugme = (Button) findViewById(R.id.button);
+        probniTekst = (TextView) findViewById(R.id.probaText);
+        firebaseAuth=FirebaseAuth.getInstance();
+        if(user==null)
+        {
+            Intent intent = new Intent(getApplicationContext(), LogIn.class);
+            startActivity(intent);
+        }
+        else
+        {
+            probniTekst.setText(user.getEmail());
+        }
+        final Button dugme = (Button) findViewById(R.id.button);
+        dugme.setText("Register");
 
                 dugme.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Intent poziv = new Intent(getApplicationContext(), MapsActivity.class); //Register.class
+                        Intent poziv = new Intent(getApplicationContext(), Register.class); //MapsActivity.class
                         startActivity(poziv);
+
 
                         //Toast.makeText(getApplicationContext(), "ssdsd", Toast.LENGTH_SHORT).show();
 
                     }
 
+        });
+
+        Button dugme1 = (Button) findViewById(R.id.button1);
+        dugme1.setText("ALLUserList");
+
+        dugme1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent poziv = new Intent(getApplicationContext(), AllUsersList.class); //Register.class
+                startActivity(poziv);
+
+
+                //Toast.makeText(getApplicationContext(), "ssdsd", Toast.LENGTH_SHORT).show();
+
+            }
+
+        });
+        Button SignOut = (Button) findViewById(R.id.mSignOut);
+        SignOut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+            firebaseAuth.signOut();
+                finish();
+                Intent intent = new Intent(getApplicationContext(), LogIn.class);
+                startActivity(intent);
+            }
         });
     }
 }

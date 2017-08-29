@@ -94,7 +94,7 @@ public class UserProfile extends AppCompatActivity {
                 userName.setText(user);
                 final String[] url = new String[1];
 
-                mStorageRef.child("gs://myapplication-5bc36.appspot.com/users/ttt").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                mStorageRef.child("users/ttt").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                     @Override
                     public void onSuccess(Uri uri) {
                          url[0] = uri.toString();
@@ -102,7 +102,8 @@ public class UserProfile extends AppCompatActivity {
                 });
 
                 //String url= mStorageRef.child("users/ttt").getDownloadUrl().getResult().toString();
-                wslika.loadUrl(url[0]);
+                wslika.loadUrl("https://firebasestorage.googleapis.com/v0/b/myapplication-5bc36.appspot.com/o/users%2Feeeeee?alt=media&token=0970368b-935b-40e0-9d85-c474ce6dc79c");
+
                 //mStorageRef.child("users/"+user+".jpg").getDownloadUrl().getResult();
             }
 
