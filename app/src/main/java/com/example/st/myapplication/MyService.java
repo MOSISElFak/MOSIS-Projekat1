@@ -26,6 +26,8 @@ public class MyService extends Service {
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private DatabaseReference myRef = database.getReference();
     String currentUser;
+    Location oldLocation;
+    Location newLocation;
 
     NotificationCompat.Builder notification;
 
@@ -45,6 +47,16 @@ public class MyService extends Service {
             currentUser=user.getEmail().toString();
         }
 
+
+        oldLocation = new Location("Tacka A");
+        oldLocation.setLongitude(0);
+        oldLocation.setLatitude(0);
+
+        newLocation = new Location("Tacka B");
+        newLocation.setLongitude(0);
+        newLocation.setLatitude(0);
+
+
         notification= new NotificationCompat.Builder(this);
         notification.setAutoCancel(true);
 
@@ -53,7 +65,9 @@ public class MyService extends Service {
             public void onLocationChanged(Location location) {
                 myRef.child("users").child("lord").child("Latitude").setValue(location.getLatitude());
                 myRef.child("users").child("lord").child("Longitude").setValue(location.getLongitude());
-                NotificationConfig((float)location.getLatitude(), (float) location.getLongitude());
+                oldLocation=newLocation;
+                newLocation=location;
+                NotificationConfig((float)location.getLatitude(), (float) location.getLongitude(), oldLocation.distanceTo(newLocation));
             }
 
             @Override
@@ -102,12 +116,12 @@ public class MyService extends Service {
         // TODO: Return the communication channel to the service.
         throw new UnsupportedOperationException("Not yet implemented");
     }
-    private void NotificationConfig(float lat , float lng)
+    private void NotificationConfig(float lat , float lng, float dist)
     {
         notification.setSmallIcon(R.mipmap.ic_launcher_round);
         notification.setTicker("This is the ticker");
         notification.setWhen(System.currentTimeMillis());
-        notification.setContentTitle("Title");
+        notification.setContentTitle("Distance traveled " + dist);
         notification.setContentText("Lat: " + lat + "Lng: " + lng);
 
         Intent intent = new Intent(getApplicationContext(),MapsActivity.class);
