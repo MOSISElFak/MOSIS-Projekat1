@@ -17,6 +17,8 @@ public class MainActivity extends AppCompatActivity {
     private TextView probniTekst;
     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     private FirebaseAuth firebaseAuth;
+    private Button SStartServise;
+    private Button SStopService;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,6 +36,22 @@ public class MainActivity extends AppCompatActivity {
         {
             probniTekst.setText(user.getEmail());
         }
+        SStartServise= (Button) findViewById(R.id.sStartService);
+        SStopService= (Button) findViewById(R.id.sStopService);
+        SStartServise.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(getApplicationContext(), MyService.class);
+                startService(i);
+            }
+        });
+        SStopService.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(getApplicationContext(), MyService.class);
+                stopService(i);
+            }
+        });
         final Button dugme = (Button) findViewById(R.id.button);
         dugme.setText("Register");
 
