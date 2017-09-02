@@ -44,7 +44,8 @@ public class AllUsersList extends AppCompatActivity {
         lista.setAdapter(arrayAdapter);
 
 
-        myRef.child("users").addChildEventListener(new ChildEventListener() {
+
+        myRef.child("users").orderByChild("points").addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 value = dataSnapshot.getKey(); //+ dataSnapshot.getValue().toString()

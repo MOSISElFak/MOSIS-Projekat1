@@ -14,17 +14,27 @@ import android.os.IBinder;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
 
 public class MyService extends Service {
     private LocationManager locationManager;
     private LocationListener locationListener;
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private DatabaseReference myRef = database.getReference();
+
+    private UserClass userClass;
+    private ArrayList<UserClass> usernames = new ArrayList<>();
     String currentUser;
     Location oldLocation;
     Location newLocation;
@@ -48,6 +58,7 @@ public class MyService extends Service {
         }
 
 
+
         oldLocation = new Location("Tacka A");
         oldLocation.setLongitude(0);
         oldLocation.setLatitude(0);
@@ -63,8 +74,8 @@ public class MyService extends Service {
         locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
-                myRef.child("users").child("lord").child("Latitude").setValue(location.getLatitude());
-                myRef.child("users").child("lord").child("Longitude").setValue(location.getLongitude());
+                myRef.child("users").child("lord").child("latitude").setValue(""+location.getLatitude());
+                myRef.child("users").child("lord").child("longitude").setValue(""+location.getLongitude());
                 oldLocation=newLocation;
                 newLocation=location;
                 NotificationConfig((float)location.getLatitude(), (float) location.getLongitude(), oldLocation.distanceTo(newLocation));
@@ -133,4 +144,33 @@ public class MyService extends Service {
 
 
     }
+//    public String FindUser()
+//    {
+//        myRef.child("users").addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                usernames=(ArrayList<UserClass>)dataSnapshot.getValue();
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//
+//            }
+//        });
+//
+//        for(UserClass uc : usernames)
+//        {
+//            if(uc.email=="qwe@qwe.qwe")
+//            {
+//                Log.v("id je ",uc.id);
+//                return uc.id;
+//            }
+//            else
+//            {
+//                Log.v("idjevi su ",uc.id);
+//            }
+//
+//        }
+//        return null;
+//    }
 }

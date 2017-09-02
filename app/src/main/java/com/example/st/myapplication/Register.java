@@ -44,11 +44,12 @@ public class Register extends AppCompatActivity {
     private EditText Prezime;
     private EditText Username;
     private EditText Password;
-    private EditText BrTel;
     private ImageView rSlika;
     private Button rSlikaj;
     private Bitmap photo;
     public  Uri downloadUrl;
+    private boolean uploadSlike;
+    private boolean registerSuccsess;
 
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private DatabaseReference myRef = database.getReference();
@@ -64,10 +65,12 @@ public class Register extends AppCompatActivity {
         Prezime = (EditText) findViewById(R.id.ePrezime);
         Username = (EditText) findViewById(R.id.eUsername);
         Password = (EditText) findViewById(R.id.ePassword);
-        BrTel = (EditText) findViewById(R.id.eBrojTelefona);
         rSlika = (ImageView) findViewById(R.id.rSlika);
         rSlikaj = (Button) findViewById(R.id.rSlikaj);
         Email= (EditText) findViewById(R.id.eEmail);
+        uploadSlike=false;
+        registerSuccsess=false;
+
 
         mStorageRef = FirebaseStorage.getInstance().getReference();
         firebaseAuth=FirebaseAuth.getInstance();
@@ -92,13 +95,13 @@ public class Register extends AppCompatActivity {
 
                 if(TextUtils.isEmpty(Email.getText().toString()))
                 {
-                    Toast.makeText(Register.this, "Please enter Email", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Register.this, "Please enter email", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
                 if(TextUtils.isEmpty(Password.getText().toString()))
                 {
-                    Toast.makeText(Register.this, "Please enter Password", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Register.this, "Please enter password", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 if(TextUtils.isEmpty(Username.getText().toString()))
@@ -113,6 +116,13 @@ public class Register extends AppCompatActivity {
                         if(task.isSuccessful())
                         {
                             Toast.makeText(Register.this, "Registered Successfully", Toast.LENGTH_SHORT).show();
+                            registerSuccsess=true;
+                            if(uploadSlike==true && registerSuccsess==true)
+                            {
+                                finish();
+                                Intent intent = new Intent(getApplicationContext(),MainActivity.class);
+                                startActivity(intent);
+                            }
                         }
                         else {
                             Toast.makeText(Register.this, "Registered UN-Successfully", Toast.LENGTH_SHORT).show();
@@ -121,18 +131,13 @@ public class Register extends AppCompatActivity {
                     }
                 });
 
-                myRef.child("users").child(Username.getText().toString()).child("Email").setValue(Email.getText().toString());
-                myRef.child("users").child(Username.getText().toString()).child("Ime").setValue(Ime.getText().toString());
-                myRef.child("users").child(Username.getText().toString()).child("Prezime").setValue(Prezime.getText().toString());
-                myRef.child("users").child(Username.getText().toString()).child("Password").setValue(Password.getText().toString());
-                myRef.child("users").child(Username.getText().toString()).child("Broj Telefona").setValue(BrTel.getText().toString());
+                myRef.child("users").child(Username.getText().toString()).child("email").setValue(Email.getText().toString());
+                myRef.child("users").child(Username.getText().toString()).child("ime").setValue(Ime.getText().toString());
+                myRef.child("users").child(Username.getText().toString()).child("prezime").setValue(Prezime.getText().toString());
+                myRef.child("users").child(Username.getText().toString()).child("password").setValue(Password.getText().toString());
 
 
-//                if(photo==null)
-//                {
-//                    photo = BitmapFactory.decodeFile("drawable/arrow1.png");
-//                    rSlika.setImageBitmap(photo);
-//                }
+//
 
                     StorageReference referenca= mStorageRef.child("users").child(Username.getText().toString());
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -151,6 +156,12 @@ public class Register extends AppCompatActivity {
                             // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
                             downloadUrl = taskSnapshot.getDownloadUrl();
                             Toast.makeText(Register.this,"Uspesan upload slike",Toast.LENGTH_LONG ).show();
+                            uploadSlike=true;
+                            if(uploadSlike==true && registerSuccsess==true)
+                            {
+                                Intent intent = new Intent(getApplicationContext(),MainActivity.class);
+                                startActivity(intent);
+                            }
                         }
                     });
 

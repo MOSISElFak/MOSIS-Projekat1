@@ -40,13 +40,13 @@ public class LogIn extends AppCompatActivity {
             public void onClick(View v) {
                 if(TextUtils.isEmpty(LEmail.getText().toString()))
                 {
-                    Toast.makeText(LogIn.this, "Please enter Email", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LogIn.this, "Please enter email", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
                 if(TextUtils.isEmpty(LPassword.getText().toString()))
                 {
-                    Toast.makeText(LogIn.this, "Please enter Password", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LogIn.this, "Please enter password", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 firebaseAuth.signInWithEmailAndPassword(LEmail.getText().toString(), LPassword.getText().toString())

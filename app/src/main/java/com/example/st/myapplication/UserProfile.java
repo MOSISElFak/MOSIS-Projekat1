@@ -3,6 +3,7 @@ package com.example.st.myapplication;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.webkit.WebView;
 import android.widget.AdapterView;
@@ -21,6 +22,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.io.Console;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Objects;
@@ -35,12 +37,14 @@ public class UserProfile extends AppCompatActivity {
     private TextView userName;
     private TextView uime;
     private TextView uprezime;
-    private TextView ubroj;
+    private TextView uemail;
     private WebView wslika;
-    private ImageView uslika;
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private DatabaseReference myRef = database.getReference();
     private StorageReference mStorageRef;
+    private UserClass userClass;
+    private String url;
+    private TextView upoints;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,8 +56,8 @@ public class UserProfile extends AppCompatActivity {
         lista = (ListView)findViewById(R.id.AllUsers);
 
         String s = getIntent().getStringExtra("vrednost");
-        SetUser(s);
-
+        SetUser(s.toString());
+        userClass = new UserClass();
 
         lista.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -68,9 +72,9 @@ public class UserProfile extends AppCompatActivity {
         userName=(TextView) findViewById(R.id.UUserName);
         uime=(TextView) findViewById(R.id.UIme);
         uprezime=(TextView) findViewById(R.id.UPrezime);
-        ubroj=(TextView) findViewById(R.id.UBrojTelefona);
+        uemail=(TextView) findViewById(R.id.UEmail);
         wslika=(WebView) findViewById(R.id.WW);
-        uslika =(ImageView)findViewById(R.id.USlika);
+        upoints = (TextView) findViewById(R.id.UPoints);
 
 
 
@@ -84,25 +88,26 @@ public class UserProfile extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
-                //Map<String, Objects> map =(Map<String, Objects>) dataSnapshot.getValue();
-                String ime = dataSnapshot.child("Ime").getValue().toString();
-                String prezime = dataSnapshot.child("Prezime").getValue().toString();
-                String broj = dataSnapshot.child("Broj Telefona").getValue().toString();
-                uime.setText(ime);
-                uprezime.setText(prezime);
-                ubroj.setText(broj);
-                userName.setText(user);
-                final String[] url = new String[1];
+                userClass= dataSnapshot.getValue(UserClass.class);
+                uime.setText(userClass.ime);
+                uprezime.setText(userClass.prezime);
+                userClass.id=user;
+                uemail.setText(userClass.email);
+                upoints.setText(userClass.points);
+                //ubroj.setText(userClass.getBrojTelefona());
+                userName.setText(userClass.id);
 
-                mStorageRef.child("users/ttt").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                mStorageRef.child("users").child(user).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                     @Override
                     public void onSuccess(Uri uri) {
-                         url[0] = uri.toString();
+                        Log.v("tag", uri.toString());
+                         url = uri.toString();
+                        wslika.loadUrl(url);
                     }
                 });
 
                 //String url= mStorageRef.child("users/ttt").getDownloadUrl().getResult().toString();
-                wslika.loadUrl("https://firebasestorage.googleapis.com/v0/b/myapplication-5bc36.appspot.com/o/users%2Feeeeee?alt=media&token=0970368b-935b-40e0-9d85-c474ce6dc79c");
+
 
                 //mStorageRef.child("users/"+user+".jpg").getDownloadUrl().getResult();
             }
