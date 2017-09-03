@@ -1,5 +1,7 @@
 package com.example.st.myapplication;
 
+import android.content.Intent;
+
 /**
  * Created by st on 01-Sep-17.
  */
@@ -8,10 +10,10 @@ public  class UserClass {
     String email;
     String ime;
     String prezime;
-    String latitude;
-    String longitude;
+    double latitude;
+    double longitude;
     String id;
-    String points;
+    int points;
 
 
     public UserClass()
@@ -19,10 +21,11 @@ public  class UserClass {
         ime = null;
         prezime=null;
         email=null;
-        latitude=null;
-        longitude=null;
+        latitude=0;
+        longitude=0;
+        points=0;
     }
-    public String getPoints()
+    public int getPoints()
     {
         return points;
     }
@@ -55,19 +58,19 @@ public  class UserClass {
     {
         this.email= email;
     }
-    public String getLatitude()
+    public double getLatitude()
     {
         return latitude;
     }
-    public void setLatitude(String latitude)
+    public void setLatitude(double latitude)
     {
         this.latitude= latitude;
     }
-    public String getLongitude()
+    public double getLongitude()
     {
         return longitude;
     }
-    public void setLongitude(String longitude)
+    public void setLongitude(double longitude)
     {
         this.longitude= longitude;
     }

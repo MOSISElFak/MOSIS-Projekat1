@@ -6,6 +6,7 @@ package com.example.st.myapplication;
         import android.view.View;
         import android.widget.AdapterView;
         import android.widget.ArrayAdapter;
+        import android.widget.Button;
         import android.widget.ListView;
         import android.widget.TextView;
 
@@ -21,15 +22,14 @@ public class AllUsersList extends AppCompatActivity {
 
 
 
-
+    private Button reorder;
     private ListView lista ;
     private  String value;
     private ArrayList<String> usernames = new ArrayList<>();
-    private ArrayList<String> usernamesS = new ArrayList<>();
-    private TextView userName;
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private DatabaseReference myRef = database.getReference();
-
+    private ArrayAdapter<String> arrayAdapter ;
+    private boolean order = true;
 
 
 
@@ -37,43 +37,34 @@ public class AllUsersList extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_all_users_list);
 
+        reorder= (Button) findViewById(R.id.Reorder);
 
         lista = (ListView)findViewById(R.id.AllUsers);
 
-        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_expandable_list_item_1, usernames);
+        arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_expandable_list_item_1, usernames);
         lista.setAdapter(arrayAdapter);
-
-
-
-        myRef.child("users").orderByChild("points").addChildEventListener(new ChildEventListener() {
+        reorder.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                value = dataSnapshot.getKey(); //+ dataSnapshot.getValue().toString()
-                usernames.add(value);
-                arrayAdapter.notifyDataSetChanged();
+            public void onClick(View v) {
 
-            }
-
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
+                if(order)
+                {
+                    usernames.clear();
+                    FillList(order);
+                    order=false;
+                }
+                else
+                {
+                    usernames.clear();
+                    FillList(order);
+                    order=true;
+                }
             }
         });
+        usernames.clear();
+        FillList(!order);
+
+
         lista.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -83,7 +74,76 @@ public class AllUsersList extends AppCompatActivity {
                 startActivity(i);
             }
         });
-        userName=(TextView) findViewById(R.id.UUserName);
+
+    }
+    private void FillList(boolean order)
+    {
+        if(order)
+        {
+            myRef.child("users").orderByChild("points").addChildEventListener(new ChildEventListener() {
+                @Override
+                public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                    value = dataSnapshot.getKey(); //+ dataSnapshot.getValue().toString()
+                    usernames.add(value);
+                    arrayAdapter.notifyDataSetChanged();
+                    lista.invalidate();
+
+                }
+
+                @Override
+                public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+                }
+
+                @Override
+                public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+                }
+
+                @Override
+                public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+        }
+        else
+        {
+            myRef.child("users").addChildEventListener(new ChildEventListener() {
+                @Override
+                public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                    value = dataSnapshot.getKey(); //+ dataSnapshot.getValue().toString()
+                    usernames.add(value);
+                    arrayAdapter.notifyDataSetChanged();
+                    lista.invalidate();
+
+                }
+
+                @Override
+                public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+                }
+
+                @Override
+                public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+                }
+
+                @Override
+                public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+        }
 
     }
 

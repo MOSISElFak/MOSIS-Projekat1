@@ -12,6 +12,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.provider.Settings;
+import android.support.annotation.IntDef;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
@@ -35,9 +36,12 @@ public class MyService extends Service {
 
     private UserClass userClass;
     private ArrayList<UserClass> usernames = new ArrayList<>();
+    public int NotificationId=1;
     String currentUser;
     Location oldLocation;
     Location newLocation;
+    String radious;
+
 
     NotificationCompat.Builder notification;
 
@@ -56,7 +60,7 @@ public class MyService extends Service {
         {
             currentUser=user.getEmail().toString();
         }
-
+        FindUser();
 
 
         oldLocation = new Location("Tacka A");
@@ -74,11 +78,9 @@ public class MyService extends Service {
         locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
-                myRef.child("users").child("lord").child("latitude").setValue(""+location.getLatitude());
-                myRef.child("users").child("lord").child("longitude").setValue(""+location.getLongitude());
-                oldLocation=newLocation;
-                newLocation=location;
-                NotificationConfig((float)location.getLatitude(), (float) location.getLongitude(), oldLocation.distanceTo(newLocation));
+                myRef.child("users").child(ReturnID(currentUser)).child("latitude").setValue(location.getLatitude());
+                myRef.child("users").child(ReturnID(currentUser)).child("longitude").setValue(location.getLongitude());
+                CheckRadious(Float.parseFloat(radious),location);
             }
 
             @Override
@@ -127,50 +129,83 @@ public class MyService extends Service {
         // TODO: Return the communication channel to the service.
         throw new UnsupportedOperationException("Not yet implemented");
     }
-    private void NotificationConfig(float lat , float lng, float dist)
+    private void NotificationConfig(double lat , double lng, float dist, String email, String ime, int hashcode)
     {
         notification.setSmallIcon(R.mipmap.ic_launcher_round);
         notification.setTicker("This is the ticker");
         notification.setWhen(System.currentTimeMillis());
-        notification.setContentTitle("Distance traveled " + dist);
-        notification.setContentText("Lat: " + lat + "Lng: " + lng);
+        notification.setContentTitle(ime + "   " + dist);
+        notification.setContentText(email+"  Lat: " + lat + "Lng: " + lng);
 
         Intent intent = new Intent(getApplicationContext(),MapsActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this,0,intent,PendingIntent.FLAG_UPDATE_CURRENT);
         notification.setContentIntent(pendingIntent);
 
         NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        nm.notify(1,notification.build());
+        nm.notify(hashcode,notification.build());
 
 
     }
-//    public String FindUser()
-//    {
-//        myRef.child("users").addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                usernames=(ArrayList<UserClass>)dataSnapshot.getValue();
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//
-//            }
-//        });
-//
-//        for(UserClass uc : usernames)
-//        {
-//            if(uc.email=="qwe@qwe.qwe")
-//            {
-//                Log.v("id je ",uc.id);
-//                return uc.id;
-//            }
-//            else
-//            {
-//                Log.v("idjevi su ",uc.id);
-//            }
-//
-//        }
-//        return null;
-//    }
+
+    public void FindUser() {
+        myRef.child("users").addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                UserClass userClass = dataSnapshot.getValue(UserClass.class);
+                userClass.id=dataSnapshot.getKey();
+                usernames.add(userClass);
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    public String ReturnID(String email)
+    {
+        for(UserClass uc : usernames)
+        {
+            if(uc.email.equals(email))
+               return uc.id;
+        }
+        return null;
+    }
+
+    public void CheckRadious(float radious, Location locator)
+    {
+        for(UserClass uc : usernames)
+        {
+            Location userLocation = new Location("Korisnikova Tacka");
+            userLocation.setLatitude(uc.latitude);
+            userLocation.setLongitude(uc.longitude);
+            if(locator.distanceTo(userLocation)<radious && !uc.email.equals(user.getEmail()))
+            {
+                NotificationConfig(userLocation.getLatitude(),  userLocation.getLongitude(), locator.distanceTo(userLocation), uc.email,uc.ime, uc.email.hashCode());
+            }
+        }
+    }
+
+    @Override
+    public int onStartCommand(Intent intent,  int flags, int startId) {
+         radious=(String) intent.getExtras().get("radius");
+        Log.e("radius: " , radious);
+        return super.onStartCommand(intent, flags, startId);
+    }
 }

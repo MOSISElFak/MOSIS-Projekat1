@@ -55,6 +55,7 @@ public class UserProfile extends AppCompatActivity {
 
         lista = (ListView)findViewById(R.id.AllUsers);
 
+
         String s = getIntent().getStringExtra("vrednost");
         SetUser(s.toString());
         userClass = new UserClass();
@@ -93,7 +94,7 @@ public class UserProfile extends AppCompatActivity {
                 uprezime.setText(userClass.prezime);
                 userClass.id=user;
                 uemail.setText(userClass.email);
-                upoints.setText(userClass.points);
+                upoints.setText(userClass.points+"");
                 //ubroj.setText(userClass.getBrojTelefona());
                 userName.setText(userClass.id);
 
@@ -105,11 +106,6 @@ public class UserProfile extends AppCompatActivity {
                         wslika.loadUrl(url);
                     }
                 });
-
-                //String url= mStorageRef.child("users/ttt").getDownloadUrl().getResult().toString();
-
-
-                //mStorageRef.child("users/"+user+".jpg").getDownloadUrl().getResult();
             }
 
             @Override
