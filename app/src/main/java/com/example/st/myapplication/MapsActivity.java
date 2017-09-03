@@ -1,5 +1,6 @@
 package com.example.st.myapplication;
 
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
@@ -15,6 +16,8 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -30,8 +33,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     LocationManager locationManager;
     private UserClass userClass;
     public ArrayList<UserClass> usernames;
+    public ArrayList<String> friends;
     private LatLng latLng;
     private boolean camera=true;
+    String currentUser;
+    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private DatabaseReference myRef = database.getReference();
@@ -47,8 +53,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mapFragment.getMapAsync(this);
 
         usernames = new ArrayList<>();
+        friends = new ArrayList<>();
+
+        if(user==null)
+        {
+            Intent intent = new Intent(getApplicationContext(), LogIn.class);
+            startActivity(intent);
+        }
+        else
+        {
+            currentUser=user.getEmail().toString();
+        }
+
 
         latLng = new LatLng(0,0);
+        //AddUsers();
+        //FindFriends();
         FindUser();
 
         userClass = new UserClass();
@@ -63,6 +83,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 UserClass userClass = dataSnapshot.getValue(UserClass.class);
                 userClass.id=dataSnapshot.getKey();
+
                 mMap.addMarker(new MarkerOptions().position(new LatLng(userClass.latitude, userClass.longitude)).title(userClass.email));
                 usernames.add(userClass);
             }
@@ -88,6 +109,80 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
     }
+    public void AddUsers() {
+        myRef.child("users").addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                UserClass userClass = dataSnapshot.getValue(UserClass.class);
+                userClass.id=dataSnapshot.getKey();
+                usernames.add(userClass);
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+
+    public void FindFriends() {
+        myRef.child("friends").child(GetUsername(user.getEmail())).addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                String tmp = dataSnapshot.getValue().toString();
+
+                //mMap.addMarker(new MarkerOptions().position(new LatLng(userClass.latitude, userClass.longitude)).title(userClass.email).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+                friends.add(tmp);
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    public String GetUsername(String email)
+    {
+        for(UserClass uc : usernames)
+        {
+            if(uc.email.equals(email))
+                return uc.id;
+        }
+        return null;
+    }
+
 
 
     /**

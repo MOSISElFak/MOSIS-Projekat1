@@ -55,7 +55,11 @@
         <service
             android:name=".MyService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true" />
+
+        <activity android:name=".OdgovoriteNaPitanja" />
+        <activity android:name=".AddQuestion" />
+        <activity android:name=".AddMyPlace"></activity>
     </application>
 
 </manifest>

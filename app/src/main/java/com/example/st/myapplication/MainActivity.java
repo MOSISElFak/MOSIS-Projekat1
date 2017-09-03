@@ -52,8 +52,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
 
 
-                Intent intent = new Intent(getApplicationContext(), MapsActivity.class); //Register.class
-                //intent.putExtra("sss", usernames);
+                Intent intent = new Intent(getApplicationContext(), AddMyPlace.class); //Register.class
                 startActivity(intent);
 
 //                InputUser.setEmail("sdad");
