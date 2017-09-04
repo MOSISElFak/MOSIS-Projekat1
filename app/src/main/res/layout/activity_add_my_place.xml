@@ -51,7 +51,7 @@
             android:layout_marginTop="10dp"
             android:textColorHint="#000000"
             android:contentDescription="Unesite ime mesta"
-            android:hint="Unesite opis mesta"
+            android:hint="Unesite ime mesta"
             android:inputType="text"
             android:textColor="#000000"
             />

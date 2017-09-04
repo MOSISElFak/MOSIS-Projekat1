@@ -37,14 +37,14 @@ public class MyService extends Service {
     private UserClass userClass;
     private ArrayList<UserClass> usernames = new ArrayList<>();
     public int NotificationId=1;
-    String currentUser;
+
     Location oldLocation;
     Location newLocation;
     String radious;
 
 
     NotificationCompat.Builder notification;
-
+    String currentUser;
     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
     @Override

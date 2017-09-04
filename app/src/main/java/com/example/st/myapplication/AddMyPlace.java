@@ -24,6 +24,11 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
@@ -38,6 +43,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
 
 import static android.R.attr.name;
 
@@ -56,6 +62,12 @@ public class AddMyPlace extends FragmentActivity {
     private StorageReference mStorageRef;
     private Bitmap photo;
     public Uri downloadUrl;
+    String currentUser;
+    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+    private ArrayList<UserClass> usernames = new ArrayList<>();
+
+    private FirebaseDatabase database = FirebaseDatabase.getInstance();
+    private DatabaseReference myRef = database.getReference();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +77,18 @@ public class AddMyPlace extends FragmentActivity {
                 .findFragmentById(R.id.map);
         // mapFragment.getMapAsync(this);
         //getLocation = (Button)findViewById(R.id.dugmeZaSlikanje);
+
+        if(user==null)
+        {
+            Intent intent = new Intent(getApplicationContext(), LogIn.class);
+            startActivity(intent);
+        }
+        else
+        {
+            currentUser=user.getEmail().toString();
+        }
+        FindUser();
+
 
         mStorageRef = FirebaseStorage.getInstance().getReference();
         mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -216,6 +240,47 @@ public class AddMyPlace extends FragmentActivity {
         double c = location.getLatitude();
 
         double d = location.getLongitude();
+    }
+
+    public void FindUser() {
+        myRef.child("users").addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                UserClass userClass = dataSnapshot.getValue(UserClass.class);
+                userClass.id=dataSnapshot.getKey();
+                usernames.add(userClass);
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    public String ReturnID(String email)
+    {
+        for(UserClass uc : usernames)
+        {
+            if(uc.email.equals(email))
+                return uc.id;
+        }
+        return null;
     }
 }
 

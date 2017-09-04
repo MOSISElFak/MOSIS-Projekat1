@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,6 +30,9 @@ public class MainActivity extends AppCompatActivity {
     private Button SStartServise;
     private Button SStopService;
     private Button Insert;
+    private EditText MRadious;
+    private Button MAddMyPlace;
+    private Button MQuiz;
 
 
     private ArrayList<UserClass> usernames = new ArrayList<>();
@@ -42,17 +46,34 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        MRadious= (EditText) findViewById(R.id.mRadious);
+        MAddMyPlace= (Button) findViewById(R.id.mAddMyPlace);
+        MQuiz= (Button) findViewById(R.id.mQuiz);
 
         probniTekst = (TextView) findViewById(R.id.probaText);
         firebaseAuth = FirebaseAuth.getInstance();
         Insert = (Button) findViewById(R.id.mInsert);
 
+        MQuiz.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), OdgovoriteNaPitanja.class);
+                startActivity(intent);
+            }
+        });
+        MAddMyPlace.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), AddMyPlace.class);
+                startActivity(intent);
+            }
+        });
         Insert.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
 
-                Intent intent = new Intent(getApplicationContext(), AddMyPlace.class); //Register.class
+                Intent intent = new Intent(getApplicationContext(), MapsActivity.class);
                 startActivity(intent);
 
 //                InputUser.setEmail("sdad");
@@ -76,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(getApplicationContext(), MyService.class);
-                i.putExtra("radius", "200000");
+                i.putExtra("radius", MRadious.getText().toString());
                 startService(i);
             }
         });
